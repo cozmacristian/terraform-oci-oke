@@ -195,14 +195,14 @@ variable "create_iam_karpenter_policy" {
 }
 
 variable "karpenter_optional_policies" {
-  default = {
-    capacity_reservation     = false
-    compute_clusters         = false
-    cluster_placement_groups = false
-    defined_tags             = false
-  }
+  default     = {}
   description = "LA: Limited Availability / Whether to create the optional IAM policies for Karpenter management. Depends on configuration of associated component when set to 'auto'. Ignored when 'create_iam_resources' is false."
-  type        = map(string)
+  type        = object({
+    capacity_reservation     = optional(bool, false)
+    compute_clusters         = optional(bool, false)
+    cluster_placement_groups = optional(bool, false)
+    defined_tags             = optional(bool, false)
+  })
 }
 
 variable "karpenter_worker_compartments" {
