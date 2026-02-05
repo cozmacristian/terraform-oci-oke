@@ -20,34 +20,25 @@ locals {
     )
   ]) : []
 
-  karpenter_workload_identity_compartment_templates = compact([
+  karpenter_workload_identity_templates = compact([
     "Allow any-user to manage instance-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
     "Allow any-user to manage volumes in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
     "Allow any-user to manage volume-attachments in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
     "Allow any-user to manage virtual-network-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
+    "Allow any-user to inspect compartments in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
+    var.karpenter_optional_policies.capacity_reservation ? "Allow any-user to use compute-capacity-reservations in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
+    var.karpenter_optional_policies.compute_clusters ? "Allow any-user to use compute-clusters in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
+    var.karpenter_optional_policies.cluster_placement_groups ? "Allow any-user to use cluster-placement-groups in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
+    var.karpenter_optional_policies.defined_tags ? "Allow any-user to use tag-namespaces in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
   ])
 
-  karpenter_workload_identity_compartment_policy_statements = var.create_iam_karpenter_policy ? tolist([
-    for statement in local.karpenter_workload_identity_compartment_templates : formatlist(statement,
+  karpenter_workload_identity_policy_statements = var.create_iam_karpenter_policy ? tolist([
+    for statement in local.karpenter_workload_identity_templates : formatlist(statement,
       local.karpenter_worker_compartments, var.cluster_id, var.karpenter_namespace
     )
   ]) : []
 
-  karpenter_workload_identity_tenancy_templates = compact([
-    "Allow any-user to inspect compartments in tenancy where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
-    var.karpenter_optional_policies.capacity_reservation ? "Allow any-user to use compute-capacity-reservations in tenancy where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
-    var.karpenter_optional_policies.compute_clusters ? "Allow any-user to use compute-clusters in tenancy where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
-    var.karpenter_optional_policies.cluster_placement_groups ? "Allow any-user to use cluster-placement-groups in tenancy where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
-    var.karpenter_optional_policies.defined_tags ? "Allow any-user to use tag-namespaces in tenancy where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
-  ])
-
-  karpenter_workload_identity_tenancy_policy_statements = var.create_iam_karpenter_policy ? tolist([
-    for statement in local.karpenter_workload_identity_tenancy_templates : formatlist(statement,
-      var.cluster_id, var.karpenter_namespace
-    )
-  ]) : []
-
-  karpenter_policy_statements = concat(local.karpenter_dynamic_group_policy_statements, local.karpenter_workload_identity_compartment_policy_statements, local.karpenter_workload_identity_tenancy_policy_statements)
+  karpenter_policy_statements = concat(local.karpenter_dynamic_group_policy_statements, local.karpenter_workload_identity_policy_statements)
 }
 
 resource "oci_identity_dynamic_group" "karpenter" {
