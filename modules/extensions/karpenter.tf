@@ -11,17 +11,11 @@ locals {
   karpenter_manifest      = sensitive(one(data.helm_template.karpenter[*].manifest))
   karpenter_manifest_path = join("/", [local.yaml_manifest_path, "karpenter.yaml"])
   karpenter_defaults = {
-    # controller_defaults = [
-    #   { "name" = "OCI_RESOURCE_PRINCIPAL_VERSION", "value" = "2.2" },
-    #   { "name" = "OCI_REGION", "value" = var.region }
-    # ]
     defaults = {
       "settings.ociVcnIpNative"       = var.cni_type == "npn" ? true : false,
       "settings.clusterCompartmentId" = var.cluster_compartment_id
       "settings.vcnCompartmentId"     = var.vcn_compartment_id
       "settings.apiserverEndpoint"    = var.cluster_private_endpoint
-      # "image.registry"                = "${var.region}.ocir.io"
-      # "image.tag"                     = var.karpenter_version
     }
   }
 }
@@ -42,18 +36,6 @@ data "helm_template" "karpenter" {
   ] : null
 
   set = concat(
-    # flatten([
-    #   for i, e in local.karpenter_defaults.controller_defaults: [
-    #     {
-    #       name = "controller.env[${i}].name"
-    #       value = e.name
-    #     },
-    #     {
-    #       name = "controller.env[${i}].value"
-    #       value = e.value
-    #     }
-    #   ]
-    # ]),
     [ for k, v in merge(local.karpenter_defaults.defaults, var.karpenter_helm_values):
       {
         name  = k,
