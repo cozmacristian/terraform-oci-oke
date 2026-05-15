@@ -6,28 +6,31 @@
 
 locals {
   karpenter_enabled       = var.karpenter_install && var.expected_node_count > 0
-  karpenter_url           = "TBD${var.karpenter_version}"
+  karpenter_repository    = "https://oracle.github.io/karpenter-provider-oci/charts"
+  karpenter_chart         = "karpenter"
   karpenter_manifest      = sensitive(one(data.helm_template.karpenter[*].manifest))
   karpenter_manifest_path = join("/", [local.yaml_manifest_path, "karpenter.yaml"])
   karpenter_defaults = {
-    controller_defaults = [
-      { "name" = "OCI_RESOURCE_PRINCIPAL_VERSION", "value" = "2.2" },
-      { "name" = "OCI_REGION", "value" = var.region }
-    ]
+    # controller_defaults = [
+    #   { "name" = "OCI_RESOURCE_PRINCIPAL_VERSION", "value" = "2.2" },
+    #   { "name" = "OCI_REGION", "value" = var.region }
+    # ]
     defaults = {
       "settings.ociVcnIpNative"       = var.cni_type == "npn" ? true : false,
       "settings.clusterCompartmentId" = var.cluster_compartment_id
       "settings.vcnCompartmentId"     = var.vcn_compartment_id
       "settings.apiserverEndpoint"    = var.cluster_private_endpoint
-      "image.registry"                = "${var.region}.ocir.io"
-      "image.tag"                     = var.karpenter_version
+      # "image.registry"                = "${var.region}.ocir.io"
+      # "image.tag"                     = var.karpenter_version
     }
   }
 }
 
 data "helm_template" "karpenter" {
   count            = local.karpenter_enabled ? 1 : 0
-  chart            = local.karpenter_url
+  chart            = local.karpenter_chart
+  repository       = local.karpenter_repository
+  version          = var.karpenter_version
   kube_version     = var.kubernetes_version
   name             = "karpenter"
   namespace        = var.karpenter_namespace
@@ -39,18 +42,18 @@ data "helm_template" "karpenter" {
   ] : null
 
   set = concat(
-    flatten([
-      for i, e in local.karpenter_defaults.controller_defaults: [
-        {
-          name = "controller.env[${i}].name"
-          value = e.name
-        },
-        {
-          name = "controller.env[${i}].value"
-          value = e.value
-        }
-      ]
-    ]),
+    # flatten([
+    #   for i, e in local.karpenter_defaults.controller_defaults: [
+    #     {
+    #       name = "controller.env[${i}].name"
+    #       value = e.name
+    #     },
+    #     {
+    #       name = "controller.env[${i}].value"
+    #       value = e.value
+    #     }
+    #   ]
+    # ]),
     [ for k, v in merge(local.karpenter_defaults.defaults, var.karpenter_helm_values):
       {
         name  = k,
