@@ -113,7 +113,7 @@ module "iam" {
   create_iam_operator_policy   = local.create_iam_operator_policy
   create_iam_worker_policy     = local.create_iam_worker_policy
   create_iam_cluster_policy    = true
-  create_iam_karpenter_policy  = local.create_iam_karpenter_policy # LA: Limited Availability
+  create_iam_karpenter_policy  = local.create_iam_karpenter_policy
   policy_name                  = local.default_policy_name
 
   create_iam_tag_namespace = var.create_iam_tag_namespace
@@ -133,7 +133,6 @@ module "iam" {
   enable_ipv6            = var.enable_ipv6
   network_compartment_id = var.network_compartment_id
 
-  # LA: Limited Availability
   karpenter_namespace           = var.karpenter_namespace
   karpenter_worker_compartments = var.karpenter_worker_compartments
   karpenter_optional_policies   = var.karpenter_optional_policies

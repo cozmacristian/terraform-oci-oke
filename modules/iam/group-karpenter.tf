@@ -1,9 +1,6 @@
 # Copyright (c) 2022, 2023 Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
-# Karpenter is currently in Limited Availability (LA). Behavior and configuration may change
-# without notice.
-
 locals {
   karpenter_group_name          = format("oke-karpenter-%v", var.state_id)
   karpenter_worker_compartments = coalescelist(var.karpenter_worker_compartments, [var.compartment_id])

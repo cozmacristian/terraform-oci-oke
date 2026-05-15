@@ -1,9 +1,6 @@
 # Copyright (c) 2021, 2023 Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 
-# Karpenter is currently in Limited Availability (LA). Behavior and configuration may change
-# without notice.
-
 locals {
   karpenter_enabled       = var.karpenter_install && var.expected_node_count > 0
   karpenter_repository    = "https://oracle.github.io/karpenter-provider-oci/charts"

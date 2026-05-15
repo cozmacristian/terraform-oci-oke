@@ -132,7 +132,7 @@ module "extensions" {
   argocd_helm_values       = var.argocd_helm_values
   argocd_helm_values_files = var.argocd_helm_values_files
 
-  # Karpenter - LA: Limited Availability
+  # Karpenter
   karpenter_install           = var.karpenter_install
   karpenter_namespace         = var.karpenter_namespace
   karpenter_version           = var.karpenter_version

@@ -420,33 +420,33 @@ variable "argocd_helm_values_files" {
   type        = list(string)
 }
 
-# Karpenter (LA: Limited Availability)
+# Karpenter
 variable "karpenter_install" {
   default     = false
-  description = "LA: Limited Availability / Whether to deploy the karpenter Helm chart. Docs TBD"
+  description = "Whether to deploy the karpenter Helm chart. See https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/conteng-kpo.htm"
   type        = bool
 }
 
 variable "karpenter_namespace" {
   default     = "kube-system"
-  description = "LA: Limited Availability / Kubernetes namespace for deployed resources."
+  description = "Kubernetes namespace for deployed resources."
   type        = string
 }
 
 variable "karpenter_version" {
-  default     = "0.1.125"
-  description = "LA: Limited Availability / Version of the Helm chart to install. List available releases using `helm search repo [keyword] --versions`."
+  default     = "v1.1.0"
+  description = "Version of the Helm chart to install. List available releases using `helm search repo [keyword] --versions`."
   type        = string
 }
 
 variable "karpenter_helm_values" {
   default     = {}
-  description = "LA: Limited Availability / Map of individual Helm chart values. See <a href=https://registry.terraform.io/providers/hashicorp/helm/latest/docs/data-sources/template>data.helm_template</a>."
+  description = "Map of individual Helm chart values. See <a href=https://registry.terraform.io/providers/hashicorp/helm/latest/docs/data-sources/template>data.helm_template</a>."
   type        = map(string)
 }
 
 variable "karpenter_helm_values_files" {
   default     = []
-  description = "LA: Limited Availability / Paths to a local YAML files with Helm chart values (as with `helm install -f` which supports multiple). Generate with defaults using `helm show values [CHART] [flags]`."
+  description = "Paths to a local YAML files with Helm chart values (as with `helm install -f` which supports multiple). Generate with defaults using `helm show values [CHART] [flags]`."
   type        = list(string)
 }
