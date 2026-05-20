@@ -3,9 +3,7 @@
 
 locals {
   karpenter_group_name          = format("oke-karpenter-%v", var.state_id)
-  karpenter_worker_compartments = coalescelist(var.karpenter_worker_compartments, [var.compartment_id])
-  karpenter_compartment_matches = formatlist("instance.compartment.id = '%v'", local.karpenter_worker_compartments)
-  karpenter_group_rules         = format("ANY {%v}", join(", ", local.karpenter_compartment_matches))
+  karpenter_group_rules         = format("ANY {instance.compartment.id = '%v'}", var.compartment_id)
 
   karpenter_cluster_join_statement = format(
     "Allow dynamic-group %v to {CLUSTER_JOIN} in compartment id %v",
@@ -17,7 +15,7 @@ locals {
     "Allow any-user to manage instance-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
     "Allow any-user to manage volumes in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
     "Allow any-user to manage volume-attachments in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
-    "Allow any-user to manage virtual-network-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
+    var.compartment_id == coalesce(var.network_compartment_id, var.compartment_id) ? "Allow any-user to manage virtual-network-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
     "Allow any-user to inspect compartments in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
     var.karpenter_optional_policies.capacity_reservation ? "Allow any-user to use compute-capacity-reservations in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
     var.karpenter_optional_policies.compute_clusters ? "Allow any-user to use compute-clusters in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }" : "",
@@ -27,7 +25,7 @@ locals {
 
   karpenter_workload_identity_policy_statements = var.create_iam_karpenter_policy ? tolist([
     for statement in local.karpenter_workload_identity_templates : formatlist(statement,
-      local.karpenter_worker_compartments, var.cluster_id, var.karpenter_namespace
+      var.compartment_id, var.cluster_id, var.karpenter_namespace
     )
   ]) : []
 
