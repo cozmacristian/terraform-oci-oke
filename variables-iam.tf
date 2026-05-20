@@ -207,7 +207,7 @@ variable "karpenter_optional_policies" {
 
 variable "karpenter_worker_compartments" {
   default     = []
-  description = "Compartments where karpenter will create worker nodes. Ignored when 'create_iam_resources' is false."
+  description = "Compartments OCIDs where Karpenter will create worker nodes. Ignored when 'create_iam_resources' is false."
   type        = list(string)
 }
 

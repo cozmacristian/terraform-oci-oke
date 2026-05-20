@@ -7,15 +7,11 @@ locals {
   karpenter_compartment_matches = formatlist("instance.compartment.id = '%v'", local.karpenter_worker_compartments)
   karpenter_group_rules         = format("ANY {%v}", join(", ", local.karpenter_compartment_matches))
 
-  karpenter_dynamic_group_templates = [
+  karpenter_cluster_join_statement = format(
     "Allow dynamic-group %v to {CLUSTER_JOIN} in compartment id %v",
-  ]
-
-  karpenter_dynamic_group_policy_statements = var.create_iam_karpenter_policy ? tolist([
-    for statement in local.karpenter_dynamic_group_templates : formatlist(statement,
-      local.karpenter_group_name, local.karpenter_worker_compartments,
-    )
-  ]) : []
+    local.karpenter_group_name,
+    var.compartment_id
+  )
 
   karpenter_workload_identity_templates = compact([
     "Allow any-user to manage instance-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }",
@@ -35,7 +31,9 @@ locals {
     )
   ]) : []
 
-  karpenter_policy_statements = concat(local.karpenter_dynamic_group_policy_statements, local.karpenter_workload_identity_policy_statements)
+  karpenter_policy_statements = concat(
+    [local.karpenter_cluster_join_statement],
+    local.karpenter_workload_identity_policy_statements)
 }
 
 resource "oci_identity_dynamic_group" "karpenter" {
