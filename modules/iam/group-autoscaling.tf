@@ -14,16 +14,18 @@ locals {
     # "tag.${var.tag_namespace}.state_id.value='${var.state_id}'", # TODO optional use w/ config
   ])) : local.autoscaler_compartment_rule
 
-  autoscaler_templates = [
-    "Allow dynamic-group %v to manage cluster-node-pools in compartment id %v",
-    "Allow dynamic-group %v to manage compute-management-family in compartment id %v",
-    "Allow dynamic-group %v to manage instance-family in compartment id %v",
-    "Allow dynamic-group %v to manage volume-family in compartment id %v",
+  autoscaler_networking_policies = compact([
     "Allow dynamic-group %v to use subnets in compartment id %v",
-    "Allow dynamic-group %v to read virtual-network-family in compartment id %v",
     "Allow dynamic-group %v to use vnics in compartment id %v",
+    var.network_compartment_id != null ? "Allow dynamic-group %v to read virtual-network-family in compartment id %v" : "",
+    var.network_compartment_id != null ? "Allow dynamic-group %v to inspect compartments in compartment id %v" : ""
+  ])
+
+  autoscaler_templates = concat([
+    "Allow dynamic-group %v to manage cluster-node-pools in compartment id %v",
+    "Allow dynamic-group %v to manage instance-family in compartment id %v",
     "Allow dynamic-group %v to inspect compartments in compartment id %v",
-  ]
+  ], local.autoscaler_networking_policies)
 
   autoscaler_policy_statements = var.create_iam_autoscaler_policy ? tolist([
     for statement in local.autoscaler_templates : formatlist(statement,
