@@ -190,7 +190,7 @@ variable "cluster_autoscaler_namespace" {
 }
 
 variable "cluster_autoscaler_helm_version" {
-  default     = "9.24.0"
+  default     = "9.53.0"
   description = "Version of the Helm chart to install. List available releases using `helm search repo [keyword] --versions`."
   type        = string
 }
