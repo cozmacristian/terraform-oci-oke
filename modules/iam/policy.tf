@@ -45,12 +45,7 @@ resource "oci_identity_policy" "networking_policies" {
     var.create_iam_karpenter_policy && var.network_compartment_id != null ? format("Allow any-user to manage virtual-network-family in compartment id %v where all { request.principal.type='workload', request.principal.cluster_id = '%v', request.principal.namespace = '%v', request.principal.service_account = 'karpenter' }", coalesce(var.network_compartment_id, var.compartment_id), var.cluster_id, var.karpenter_namespace) : null,
     var.cni_type == "npn" && var.network_compartment_id != null && var.network_compartment_id != var.compartment_id ? format("Allow any-user to use private-ips in compartment id %v where all { request.principal.type = 'cluster' }", var.network_compartment_id) : null,
     ]),
-    var.create_iam_autoscaler_policy && var.network_compartment_id != null ?
-      tolist([
-        for statement in local.autoscaler_networking_policies : format(statement,
-          local.autoscaler_group_name, var.network_compartment_id,
-        )
-      ]) : []
+    local.autoscaler_network_policy_statements
   )
   defined_tags  = local.defined_tags
   freeform_tags = local.freeform_tags

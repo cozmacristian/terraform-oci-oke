@@ -618,7 +618,7 @@ operator_shape = {
 | --- | --- | --- | --- |
 | `cluster_autoscaler_install` | Whether to install the standalone Cluster Autoscaler. | `true` / `false` | `false` |
 | `cluster_autoscaler_namespace` | Kubernetes namespace. | string | `"kube-system"` |
-| `cluster_autoscaler_helm_version` | Helm chart version. | string | `"9.24.0"` |
+| `cluster_autoscaler_helm_version` | Helm chart version. | string | `"9.53.0"` |
 | `cluster_autoscaler_helm_values` | Helm values. | map(string) | `{}` |
 | `cluster_autoscaler_helm_values_files` | List of Helm values files. | list(string) | `[]` |
 
