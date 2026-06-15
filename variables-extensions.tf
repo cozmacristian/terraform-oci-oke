@@ -434,7 +434,7 @@ variable "karpenter_namespace" {
 }
 
 variable "karpenter_version" {
-  default     = "v1.1.0"
+  default     = "v1.2.0"
   description = "Version of the Helm chart to install. List available releases using `helm search repo [keyword] --versions`."
   type        = string
 }

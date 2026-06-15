@@ -700,7 +700,7 @@ service_accounts = {
 | --- | --- | --- | --- |
 | `karpenter_install` | Whether to install Karpenter. | `true` / `false` | `false` |
 | `karpenter_namespace` | Kubernetes namespace. | string | `kube-system` |
-| `karpenter_version` | Karpenter version. | string | `v1.1.0` |
+| `karpenter_version` | Karpenter version. | string | `v1.2.0` |
 | `karpenter_helm_values` | Helm values. | map(string) | `{}` |
 | `karpenter_helm_values_files` | List of Helm values files. | list(string) | `[]` |
 
